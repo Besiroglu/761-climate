@@ -1,0 +1,8 @@
+build/
+test/build/
+test/shots/
+test/node_modules/
+test/fixture.json
+test/package-lock.json
+node_modules/
+.DS_Store

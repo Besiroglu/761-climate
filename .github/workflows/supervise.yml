@@ -1,0 +1,32 @@
+name: supervise
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: supervise
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load state
+        run: |
+          git fetch --depth=1 origin state 2>/dev/null && git show origin/state:state.json > /tmp/state.json || echo '{}' > /tmp/state.json
+          cp /tmp/state.json /tmp/state.before.json
+      - name: Check the house
+        env:
+          MESSANA_KEY: ${{ secrets.MESSANA_KEY }}
+        run: node supervisor/supervise.js /tmp/state.json
+      - name: Save state when a floor's mode changed (and once a day)
+        run: |
+          strip() { python3 -c "import json,sys; d=json.load(open(sys.argv[1])); d.pop('lastRun',None); print(json.dumps(d,sort_keys=True))" "$1"; }
+          if [ "$(strip /tmp/state.json)" != "$(strip /tmp/state.before.json)" ] || [ "$(date -u +%H%M)" \< "0005" ]; then
+            mkdir -p /tmp/st && cd /tmp/st && git init -q && cp /tmp/state.json . && git add state.json
+            git -c user.name=761-climate -c user.email=actions@users.noreply.github.com commit -qm "state"
+            git push -fq "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:state
+          fi

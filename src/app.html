@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="761">
+<link rel="apple-touch-icon" href="/761-climate/icon-180.png">
+<link rel="icon" href="/761-climate/icon-180.png">
+<title>761</title>
+<style>
+:root{
+  --bg:#f2f2f7; --card:#ffffff; --ink:#1c1c1e; --sub:#8a8a8e; --sub2:#c7c7cc; --line:rgba(60,60,67,.12);
+  --fill:rgba(120,120,128,.12); --fill2:rgba(120,120,128,.20);
+  --heat:#f2761d; --heat-soft:rgba(242,118,29,.14); --cool:#0a7aff; --cool-soft:rgba(10,122,255,.12);
+  --ok:#34c759; --wait:#8e8e93; --track:rgba(120,120,128,.16); --shadow:0 18px 50px rgba(0,0,0,.12);
+  --ease:cubic-bezier(.32,.72,0,1); --sheet:#f2f2f7; --sheetcard:#ffffff;
+  --tc:rgba(10,122,255,.26); --tm:rgba(142,142,147,.16); --th:rgba(242,118,29,.28);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#000; --card:#1c1c1e; --ink:#f5f5f7; --sub:#8d8d93; --sub2:#48484a; --line:rgba(84,84,88,.45);
+  --fill:rgba(118,118,128,.24); --fill2:rgba(118,118,128,.34);
+  --heat:#ff9530; --heat-soft:rgba(255,149,48,.16); --cool:#3a9bff; --cool-soft:rgba(58,155,255,.16);
+  --ok:#30d158; --track:rgba(118,118,128,.28); --shadow:0 18px 50px rgba(0,0,0,.6); --sheet:#1c1c1e; --sheetcard:#2c2c2e;
+  --tc:rgba(118,118,128,.30); --tm:rgba(118,118,128,.30); --th:rgba(118,118,128,.30);
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Helvetica Neue",sans-serif;
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;font-feature-settings:"tnum"}
+button{font:inherit;color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 40px)}
+
+/* header */
+header{display:flex;align-items:flex-start;justify-content:space-between;padding:6px 4px 0}
+.brand{font-size:34px;font-weight:700;letter-spacing:.01em;line-height:1.1}
+.meta{color:var(--sub);font-size:15px;margin-top:2px}
+.round{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);display:grid;place-items:center;cursor:pointer;margin-top:4px}
+.round svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* floors and rooms */
+.floor{margin-top:30px}
+.fhead{display:flex;align-items:center;justify-content:space-between;margin:0 16px 7px}
+.fhead h2{margin:0;font-size:13px;font-weight:400;letter-spacing:.02em;text-transform:uppercase;color:var(--sub)}
+.mode{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--sub2);flex:none}
+.dot.heating{background:var(--heat)}.dot.cooling{background:var(--cool)}.dot.ok{background:var(--ok)}
+.mode.heating{color:var(--heat)}.mode.cooling{color:var(--cool)}
+.group{background:var(--card);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;text-align:left;padding:13px 16px;cursor:pointer;position:relative}
+.row:active{background:var(--fill)}
+.row + .row::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--line)}
+.row .txt{flex:1;min-width:0}
+.row .nm{font-size:17px;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .st{font-size:14px;color:var(--sub);display:flex;align-items:center;gap:6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .st span{overflow:hidden;text-overflow:ellipsis}
+.row .st.heating{color:var(--heat)}.row .st.cooling{color:var(--cool)}
+.row .num{text-align:right;flex:none}
+.row .cur{font-size:30px;font-weight:300;letter-spacing:-.02em;line-height:1}
+.row .tg{font-size:13px;color:var(--sub);margin-top:4px}
+.row.minor{padding:11px 16px}.row.minor .nm{font-size:16px;font-weight:400}.row.minor .cur{font-size:22px}
+.chev{width:8px;height:13px;flex:none;stroke:var(--sub2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-left:-2px}
+.foot{color:var(--sub);font-size:13px;line-height:1.45;margin:26px 16px 0}
+.banner{margin:16px 0 0;padding:12px 16px;border-radius:14px;background:var(--card);color:var(--heat);font-size:15px;display:none}
+
+/* sheets */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .35s var(--ease);z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;background:var(--sheet);border-radius:14px 14px 0 0;
+  transform:translateY(105%);visibility:hidden;transition:transform .45s var(--ease),visibility 0s linear .45s;z-index:21;box-shadow:var(--shadow);
+  padding:8px 20px calc(env(safe-area-inset-bottom) + 22px);max-height:calc(100% - env(safe-area-inset-top) - 10px);overflow-y:auto}
+.sheet.on{transform:none;visibility:visible;transition:transform .45s var(--ease)}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--sub2);margin:0 auto 10px}
+.shead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.shead h3{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.done{border:0;background:none;color:var(--cool);font-size:17px;font-weight:600;padding:6px 0 6px 12px;cursor:pointer}
+
+/* dial */
+.dialbox{position:relative;width:min(84vw,46vh,320px);aspect-ratio:1;margin:6px auto 0;touch-action:none;user-select:none;-webkit-user-select:none}
+.dialbox svg{width:100%;height:100%;overflow:visible}
+.track{fill:none;stroke:url(#gTrack);stroke-linecap:round}
+.arc{fill:none;stroke-linecap:round;transition:stroke .3s}
+.knob{fill:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,.28))}
+.nowtick{fill:var(--ink);opacity:.55}
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.center .k{font-size:14px;color:var(--sub);letter-spacing:.01em}
+.center .big{font-size:76px;font-weight:200;letter-spacing:-.04em;line-height:1;margin:2px 0 4px;font-variant-numeric:tabular-nums}
+.center .big.eco{font-size:40px;font-weight:300;letter-spacing:0;margin:10px 0 10px}
+.center .now{font-size:15px;color:var(--sub)}
+.steps{position:absolute;left:0;right:0;bottom:-2%;display:flex;justify-content:center;gap:30%;pointer-events:none}
+.steps .step{pointer-events:auto}
+.step{width:52px;height:52px;border-radius:50%;border:0;background:var(--sheetcard);display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 0 var(--line)}
+.step:active{transform:scale(.94)}
+.step svg{width:22px;height:22px;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+.say{text-align:center;font-size:16px;line-height:1.4;color:var(--ink);margin:22px 12px 4px;min-height:46px}
+.say .sub{display:block;color:var(--sub);font-size:14px;margin-top:3px}
+.say.heating .lead{color:var(--heat)}.say.cooling .lead{color:var(--cool)}
+.ecorow{display:flex;align-items:center;justify-content:space-between;background:var(--sheetcard);border-radius:12px;padding:12px 16px;margin-top:16px}
+.ecorow .l{font-size:16px}.ecorow .s{font-size:13px;color:var(--sub);margin-top:1px}
+
+/* settings */
+.seglabel{font-size:13px;color:var(--sub);text-transform:uppercase;letter-spacing:.02em;margin:18px 16px 7px}
+.seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;position:relative}
+.seg button{flex:1;border:0;background:transparent;border-radius:7px;padding:7px 4px;font-size:15px;cursor:pointer;transition:background .2s}
+.seg button.on{background:var(--card);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04);font-weight:600}
+@media (prefers-color-scheme:dark){.seg button.on{background:#636366}}
+
+/* switch */
+.sw{position:relative;width:51px;height:31px;flex:none;border:0;border-radius:16px;background:var(--fill2);cursor:pointer;transition:background .25s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.15),0 3px 1px rgba(0,0,0,.06);transition:transform .25s var(--ease)}
+.sw.on{background:var(--ok)}.sw.on::after{transform:translateX(20px)}
+
+/* admin */
+.admin .group{margin-bottom:0}
+.arow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;position:relative}
+.arow + .arow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--line)}
+.arow .l{font-size:16px;min-width:0}.arow .s{font-size:13px;color:var(--sub);margin-top:1px}
+.arow .seg{min-width:0;flex:1}
+.kv{padding:11px 16px;position:relative}.kv + .kv::before,.arow + .kv::before,.kv + .arow::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--line)}
+.kv .k{font-size:15px}.kv .v{font-size:13px;color:var(--sub);margin-top:2px}
+.sens{display:grid;grid-template-columns:1fr auto auto;gap:4px 10px;align-items:center;padding:10px 12px 10px 16px;position:relative}
+.sens + .sens::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--line)}
+.sens .n{font-size:15px}.sens .d{font-size:12px;color:var(--sub);margin-top:1px}
+.sens .hd{font-size:12px;color:var(--sub);text-align:center}
+.speeds{display:flex;gap:18px;padding:0 16px 12px;font-size:14px;color:var(--sub)}
+.arow.col{flex-direction:column;align-items:stretch}
+.warn{color:var(--heat)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:8px 6px;text-align:right;white-space:nowrap}
+.tbl th{color:var(--sub);font-weight:400}
+.tbl td:first-child,.tbl th:first-child{text-align:left;padding-left:16px;white-space:normal}
+.tbl tr + tr td{border-top:.5px solid var(--line)}
+.mini{display:inline-flex;align-items:center;gap:2px}
+.mini button{width:26px;height:26px;border-radius:50%;border:0;background:var(--fill);cursor:pointer;font-size:15px;line-height:1}
+.mini b{min-width:48px;text-align:center;font-weight:500}
+.btn{border:0;background:var(--card);color:var(--cool);border-radius:12px;padding:13px 16px;width:100%;font-size:17px;font-weight:500;cursor:pointer;margin-top:10px}
+.small{font-size:13px;color:var(--sub);line-height:1.45}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><div class="brand" id="brand">761</div><div class="meta" id="meta">&nbsp;</div></div>
+    <button class="round" id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M10.3 3.2h3.4l.5 2.3 1.6.9 2.2-.8 1.7 2.9-1.8 1.6v1.8l1.8 1.6-1.7 2.9-2.2-.8-1.6.9-.5 2.3h-3.4l-.5-2.3-1.6-.9-2.2.8-1.7-2.9 1.8-1.6v-1.8L4.3 8.5 6 5.6l2.2.8 1.6-.9z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
+  </header>
+  <div class="banner" id="banner"></div>
+  <div id="floors"></div>
+  <div id="admin" class="admin"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="roomSheet" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead"><h3 id="rsName"></h3><button class="done" id="rsDone"></button></div>
+  <div class="dialbox" id="dialbox">
+    <svg viewBox="0 0 300 300" id="dial">
+      <defs><linearGradient id="gTrack" gradientUnits="userSpaceOnUse" x1="26" y1="0" x2="274" y2="0">
+        <stop offset="0" style="stop-color:var(--tc)"/><stop offset=".5" style="stop-color:var(--tm)"/><stop offset="1" style="stop-color:var(--th)"/></linearGradient></defs>
+      <path class="track" id="dTrack" stroke-width="22"/>
+      <path class="arc" id="dArc" stroke-width="22"/>
+      <circle class="nowtick" id="dNow" r="3.5"/>
+      <circle class="knob" id="dKnob" r="15"/>
+    </svg>
+    <div class="center"><div class="k" id="dLabel"></div><div class="big" id="dBig"></div><div class="now" id="dNowTxt"></div></div>
+    <div class="steps">
+      <button class="step" id="minus" aria-label="−"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button class="step" id="plus" aria-label="+"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></button>
+    </div>
+  </div>
+  <div class="say" id="say"></div>
+  <div class="ecorow"><div><div class="l" id="ecoL"></div><div class="s" id="ecoS"></div></div><button class="sw" id="ecoSw" aria-label="Eco"></button></div>
+</div>
+
+<div class="sheet" id="setSheet" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <div class="shead"><h3 id="ssTitle"></h3><button class="done" id="ssDone"></button></div>
+  <div class="seglabel" id="lblLang"></div>
+  <div class="seg" id="segLang"><button data-v="en">English</button><button data-v="ja">日本語</button></div>
+  <div class="seglabel" id="lblUnit"></div>
+  <div class="seg" id="segUnit"><button data-v="F">°F</button><button data-v="C">°C</button></div>
+  <p class="small" id="ssNote" style="margin:22px 16px 0"></p>
+</div>
+
+<script>/*CORE*/</script>
+<script>
+const CFG = /*CONFIG*/null;
+const KEY = '/*KEY*/';
+const ADMIN = /*ADMIN*/false;
+const BASE = /*BASE*/undefined;
+const REPO = 'Besiroglu/761-climate';
+
+// ---------- words ----------
+const TX = {
+  en: {
+    settings: 'Settings', lang: 'Language', unit: 'Temperature', done: 'Done',
+    updated: t => `Updated ${t}`, outside: t => `${t} outside`,
+    m_heating: 'Heating', m_cooling: 'Cooling', m_switch: s => s === 'heating' ? 'Changing to heating' : 'Changing to cooling',
+    m_held: s => s === 'auto' ? 'Held · Messana' : s === 'heating' ? 'Held · heating' : 'Held · cooling',
+    st_ok: 'Comfortable', st_eco: 'Eco', st_heat: t => `Warming to ${t}`, st_cool: t => `Cooling to ${t}`,
+    st_switch: n => n === 'heating' ? 'Warming soon' : 'Cooling soon', st_wait: n => n === 'heating' ? 'Waiting to warm' : 'Waiting to cool', st_held: 'Mode held',
+    setTo: 'Set to', now: t => `Now ${t}`, eco: 'Eco', saving: 'Setting…',
+    say_ok: 'This room is at its temperature.', say_eco: 'Eco keeps this room between {lo} and {hi} and saves energy.',
+    say_heat: t => [`Warming to ${t}.`, 'The ceiling is warming the room, with the vents helping when it’s far off.'],
+    say_cool: t => [`Cooling to ${t}.`, 'The ceiling is cooling the room, with the vents helping when it’s far off.'],
+    say_switch: n => [n === 'heating' ? 'Getting the warm water ready.' : 'Getting the cool water ready.', 'The floor just changed over; this can take up to an hour.'],
+    say_wait: (n, f) => [`Waiting for the ${f.toLowerCase()}.`, `It is ${n === 'heating' ? 'cooling' : 'warming'} another room right now and will switch over when that room is done.`],
+    say_held: f => ['The floor’s mode is held.', `Tamay has fixed the ${f.toLowerCase()} for now.`],
+    say_sent: 'Done. The house is on it.', will: (d, t) => d > 0 ? `Will warm to ${t}` : d < 0 ? `Will cool to ${t}` : `Will hold ${t}`,
+    ecoL: 'Eco', ecoS: (lo, hi) => `Keep between ${lo} and ${hi}`,
+    err: 'Can’t reach the house. Trying again…', errSet: 'That didn’t go through. Please try again.',
+    foot: rate => `Pick a temperature and the house works out the rest: warming or cooling, the ceilings and the vents. Ceilings are gentle, about ${rate} an hour. A floor warms or cools, not both at once, so the latest change on a floor goes first.`,
+    ssNote: 'Changes reach the house within seconds.',
+  },
+  ja: {
+    settings: '設定', lang: '言語', unit: '温度の単位', done: '完了',
+    updated: t => `${t} 更新`, outside: t => `外 ${t}`,
+    m_heating: '暖房', m_cooling: '冷房', m_switch: s => s === 'heating' ? '暖房に切替中' : '冷房に切替中',
+    m_held: s => s === 'auto' ? '固定 · Messana' : s === 'heating' ? '固定 · 暖房' : '固定 · 冷房',
+    st_ok: '快適です', st_eco: 'エコ', st_heat: t => `${t}まで暖房中`, st_cool: t => `${t}まで冷房中`,
+    st_switch: n => n === 'heating' ? 'まもなく暖房' : 'まもなく冷房', st_wait: n => n === 'heating' ? '暖房待ち' : '冷房待ち', st_held: 'モード固定中',
+    setTo: '設定温度', now: t => `現在 ${t}`, eco: 'エコ', saving: '設定中…',
+    say_ok: 'この部屋は設定温度になっています。', say_eco: 'エコでは{lo}〜{hi}に保ち、省エネします。',
+    say_heat: t => [`${t}まで暖めています。`, '天井から暖め、差が大きいときは吹き出し口も手伝います。'],
+    say_cool: t => [`${t}まで冷やしています。`, '天井から冷やし、差が大きいときは吹き出し口も手伝います。'],
+    say_switch: n => [n === 'heating' ? '温水を準備しています。' : '冷水を準備しています。', '切り替え直後のため、最大1時間ほどかかります。'],
+    say_wait: (n, f) => [`${f}の順番待ちです。`, `いまは別の部屋を${n === 'heating' ? '冷房' : '暖房'}しています。終わりしだい切り替わります。`],
+    say_held: f => ['運転モードが固定されています。', `${f}のモードは管理者が固定中です。`],
+    say_sent: '設定しました。', will: (d, t) => d > 0 ? `${t}まで暖めます` : d < 0 ? `${t}まで冷やします` : `${t}を保ちます`,
+    ecoL: 'エコ', ecoS: (lo, hi) => `${lo}〜${hi}に保つ`,
+    err: '家に接続できません。再試行しています…', errSet: '変更できませんでした。もう一度お試しください。',
+    foot: rate => `温度を選ぶだけで、暖房か冷房か、天井パネルや吹き出し口まで家が自動で判断します。天井からの穏やかな冷暖房なので、変化は1時間に約${rate}です。各階は暖房と冷房を同時にできないため、最後に変更した部屋が優先されます。`,
+    ssNote: '変更は数秒で家に反映されます。',
+  },
+};
+let LANG = localStorage.getItem('lang') || ((navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en');
+let UNIT = localStorage.getItem('unit') || (LANG === 'ja' ? 'C' : 'F');
+const tx = () => TX[LANG];
+const toC = f => (f - 32) * 5 / 9, toF = c => c * 9 / 5 + 32;
+const nm = o => (o && (o[LANG] || o.en)) || '';
+function fmtNow(f) { if (f == null || f < -1000) return '–'; const v = UNIT === 'C' ? toC(f) : f; return (Math.round(v * 10) / 10).toFixed(1) + '°'; }
+function tVal(f) { return UNIT === 'C' ? Math.round(toC(f) * 2) / 2 : Math.round(f * 2) / 2; }
+function fmtT(f) { const v = tVal(f); return (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(1)) + '°'; }
+function stepT(f, dir) { if (UNIT === 'C') return Core.half(toF(tVal(f) + dir * 0.5)); return Core.half(f) + dir * 0.5; }
+function snapT(f) { return UNIT === 'C' ? Core.half(toF(Math.round(toC(f) * 2) / 2)) : Core.half(f); }
+
+// ---------- state ----------
+const core = Core.makeCore({ cfg: CFG, key: KEY, base: BASE, log: m => console.log(m) });
+let M = null, OUT = null, lastOk = null, busy = Promise.resolve(), openKey = null, draft = null, sent = false;
+const pend = {};       // room key -> target being sent
+let commitTimer = null;
+const $ = id => document.getElementById(id);
+
+async function refresh() {
+  try {
+    const [snap, o] = await Promise.all([core.snapshot(), core.api('/api/system/outdoor').catch(() => null)]);
+    M = core.model(snap); if (o && o.outdoor && o.outdoor.temperature != null) OUT = o.outdoor.temperature;
+    lastOk = new Date(); $('banner').style.display = 'none'; render();
+  }
+  catch (e) { console.error(e); banner(tx().err); }
+}
+function banner(t) { $('banner').textContent = t; $('banner').style.display = 'block'; }
+function queue(fn) { busy = busy.then(fn).catch(e => { console.error(e); banner(tx().errSet); refresh(); }); return busy; }
+const room = k => M.rooms.find(r => r.key === k);
+const floorOf = r => M.floors[r.floor];
+
+// ---------- list ----------
+function modeLine(f) {
+  const t = tx();
+  if (f.hold) return `<div class="mode"><span class="dot"></span>${t.m_held(f.mode)}</div>`;
+  const ready = f.season === 'heating' ? f.tank >= 90 : f.tank <= 65;
+  return `<div class="mode ${f.season}"><span class="dot ${f.season}"></span>${ready ? t['m_' + f.season] : t.m_switch(f.season)}</div>`;
+}
+function shortStatus(r) {
+  const t = tx(), s = r.status;
+  if (pend[r.key] != null) return ['', t.saving];
+  switch (s.code) {
+    case 'ok': return ['ok', t.st_ok];
+    case 'eco': return ['', t.st_eco];
+    case 'heating': return ['heating', t.st_heat(fmtT(r.T))];
+    case 'cooling': return ['cooling', t.st_cool(fmtT(r.T))];
+    case 'switching': return [s.need, t.st_switch(s.need)];
+    case 'waiting': return ['', t.st_wait(s.need)];
+    case 'held': return ['', t.st_held];
+  }
+  return ['', ''];
+}
+const CHEV = '<svg class="chev" viewBox="0 0 8 13"><path d="M1.5 1.5 6.5 6.5 1.5 11.5"/></svg>';
+function render() {
+  if (!M) return;
+  const t = tx();
+  document.documentElement.lang = LANG;
+  const out = OUT;
+  const when = lastOk ? lastOk.toLocaleTimeString(LANG === 'ja' ? 'ja-JP' : 'en-US', { hour: 'numeric', minute: '2-digit' }) : '';
+  $('meta').textContent = t.updated(when) + (out != null ? ' · ' + t.outside(fmtNow(out).replace(/\.\d/, '')) : '');
+  let h = '';
+  for (const f of M.floors) {
+    h += `<section class="floor"><div class="fhead"><h2>${nm(f.name)}</h2>${modeLine(f)}</div><div class="group">`;
+    for (const r of M.rooms.filter(r => r.floor === f.id)) {
+      const [cls, st] = shortStatus(r);
+      const p = pend[r.key], ecoNow = p === 'eco' || (r.eco && p == null);
+      const tg = ecoNow ? t.eco : fmtT(p != null ? p : r.T);
+      h += `<button class="row ${r.minor ? 'minor' : ''}" onclick="openRoom('${r.key}')">
+        <div class="txt"><div class="nm">${nm(r.name)}</div><div class="st ${cls}"><span class="dot ${cls}"></span><span>${st}</span></div></div>
+        <div class="num"><div class="cur">${fmtNow(r.temp)}</div><div class="tg">${ecoNow ? tg : (LANG === 'ja' ? '設定 ' : 'Set ') + tg}</div></div>${CHEV}</button>`;
+    }
+    h += '</div></section>';
+  }
+  $('floors').innerHTML = h;
+  $('foot').textContent = t.foot(UNIT === 'C' ? '0.5〜1.5°C'.replace('〜', LANG === 'ja' ? '〜' : '–') : '1–3°F');
+  if (openKey) renderRoom();
+  if (ADMIN && typeof renderAdmin === 'function') renderAdmin();
+}
+
+// ---------- room sheet + dial ----------
+const A0 = 135, SWEEP = 270, CX = 150, CY = 150, R = 124;
+function pt(a) { const r = a * Math.PI / 180; return [CX + R * Math.cos(r), CY + R * Math.sin(r)]; }
+function arcPath(a1, a2) { if (a2 - a1 < 0.01) a2 = a1 + 0.01; const [x1, y1] = pt(a1), [x2, y2] = pt(a2); return `M${x1.toFixed(2)} ${y1.toFixed(2)} A${R} ${R} 0 ${a2 - a1 > 180 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`; }
+function angOf(r, f, v) { return A0 + SWEEP * Core.clamp((v - f.min) / (f.max - f.min), 0, 1); }
+$('dTrack').setAttribute('d', arcPath(A0, A0 + SWEEP));
+
+function openRoom(k) {
+  openKey = k; const r = room(k);
+  draft = (pend[k] != null && pend[k] !== 'eco') ? pend[k] : (r.eco || pend[k] === 'eco' ? null : r.T); sent = false;
+  renderRoom(); $('scrim').classList.add('on'); $('roomSheet').classList.add('on');
+}
+function closeSheets() { $('scrim').classList.remove('on'); $('roomSheet').classList.remove('on'); $('setSheet').classList.remove('on'); openKey = null; }
+$('scrim').onclick = closeSheets; $('rsDone').onclick = closeSheets; $('ssDone').onclick = closeSheets;
+
+function renderRoom() {
+  const r = room(openKey); if (!r) return; const f = floorOf(r), t = tx();
+  $('rsName').textContent = nm(r.name); $('rsDone').textContent = t.done;
+  const eco = draft == null && r.eco;
+  const T = eco ? null : (draft != null ? draft : r.T);
+  // dial
+  const aNow = angOf(r, f, r.temp);
+  const [nx, ny] = pt(aNow); $('dNow').setAttribute('cx', nx); $('dNow').setAttribute('cy', ny);
+  if (eco) {
+    $('dArc').style.opacity = 0;
+    $('dKnob').style.display = 'none';
+    $('dLabel').textContent = ''; $('dBig').textContent = t.eco; $('dBig').className = 'big eco';
+  } else {
+    const aT = angOf(r, f, T), up = T > r.temp + 0.3, down = T < r.temp - 0.3;
+    $('dArc').setAttribute('d', arcPath(Math.min(aNow, aT), Math.max(aNow, aT)));
+    $('dArc').style.stroke = up ? 'var(--heat)' : 'var(--cool)'; $('dArc').style.opacity = (up || down) ? 1 : 0;
+    const [kx, ky] = pt(aT); $('dKnob').setAttribute('cx', kx); $('dKnob').setAttribute('cy', ky); $('dKnob').style.display = '';
+    $('dLabel').textContent = t.setTo; $('dBig').textContent = fmtT(T); $('dBig').className = 'big';
+  }
+  $('dNowTxt').textContent = t.now(fmtNow(r.temp));
+  // words
+  let lead, sub = '', cls = '';
+  const s = r.status, fname = nm(f.name);
+  if (pend[openKey] != null || sent) { lead = t.saving; if (sent && pend[openKey] == null) lead = t.say_sent; }
+  else if (eco) { lead = t.say_eco.replace('{lo}', fmtT(f.eco[0])).replace('{hi}', fmtT(f.eco[1])); }
+  else if (draft != null && draft !== r.T) { const d = draft - r.temp; lead = t.will(Math.abs(d) < 0.3 ? 0 : d, fmtT(draft)); cls = d >= 0.3 ? 'heating' : d <= -0.3 ? 'cooling' : ''; }
+  else switch (s.code) {
+    case 'ok': lead = t.say_ok; break;
+    case 'heating': [lead, sub] = t.say_heat(fmtT(r.T)); cls = 'heating'; break;
+    case 'cooling': [lead, sub] = t.say_cool(fmtT(r.T)); cls = 'cooling'; break;
+    case 'switching': [lead, sub] = t.say_switch(s.need); cls = s.need; break;
+    case 'waiting': [lead, sub] = t.say_wait(s.need, fname); break;
+    case 'held': [lead, sub] = t.say_held(fname); break;
+    default: lead = '';
+  }
+  $('say').className = 'say ' + cls;
+  $('say').innerHTML = `<span class="lead">${lead || '&nbsp;'}</span>${sub ? `<span class="sub">${sub}</span>` : ''}`;
+  $('ecoL').textContent = t.ecoL; $('ecoS').textContent = t.ecoS(fmtT(f.eco[0]), fmtT(f.eco[1]));
+  $('ecoSw').classList.toggle('on', eco);
+}
+function setDraft(v) {
+  const r = room(openKey), f = floorOf(r);
+  draft = Core.clamp(v, f.min, f.max); sent = false; renderRoom();
+  clearTimeout(commitTimer); commitTimer = setTimeout(() => commit(openKey, draft), 900);
+}
+function commit(k, T) {
+  if (k == null || T == null) return;
+  pend[k] = T; render();
+  queue(async () => { M = await core.setRoom(k, T, 'app'); })
+    .finally(() => { if (pend[k] === T) delete pend[k]; if (openKey === k) { sent = true; draft = null; } render(); setTimeout(() => { sent = false; if (openKey === k) renderRoom(); }, 2500); });
+}
+$('plus').onclick = () => { const r = room(openKey); setDraft(stepT(draft != null ? draft : (r.eco ? Math.round(r.temp) - 0.5 : r.T), +1)); };
+$('minus').onclick = () => { const r = room(openKey); setDraft(stepT(draft != null ? draft : (r.eco ? Math.round(r.temp) + 0.5 : r.T), -1)); };
+$('ecoSw').onclick = () => {
+  const r = room(openKey), on = !(draft == null && r.eco);
+  clearTimeout(commitTimer);
+  if (on) { draft = null; pend[openKey] = 'eco'; r.eco = true; renderRoom(); const k = openKey;
+    queue(async () => { M = await core.setRoom(k, 'eco', 'app'); }).finally(() => { delete pend[k]; render(); }); }
+  else setDraft(snapT(Core.clamp(r.temp, floorOf(r).min, floorOf(r).max)));
+};
+// drag on the ring
+(function () {
+  const box = $('dialbox'); let dragging = false;
+  function valAt(e) {
+    const b = box.getBoundingClientRect(), x = (e.clientX - b.left) / b.width * 300 - CX, y = (e.clientY - b.top) / b.height * 300 - CY;
+    let a = Math.atan2(y, x) * 180 / Math.PI; if (a < 0) a += 360;
+    let rel = a - A0; if (rel < 0) rel += 360;
+    if (rel > SWEEP) rel = rel - SWEEP < (360 - SWEEP) / 2 ? SWEEP : 0;   // the gap at the bottom snaps to the nearer end
+    const r = room(openKey), f = floorOf(r);
+    return snapT(f.min + (f.max - f.min) * rel / SWEEP);
+  }
+  box.addEventListener('pointerdown', e => {
+    if (e.target.closest('.step')) return;            // the − / + buttons sit inside the ring's opening
+    const b = box.getBoundingClientRect(), dx = e.clientX - b.left - b.width / 2, dy = e.clientY - b.top - b.height / 2;
+    if (Math.hypot(dx, dy) < b.width * 0.30) return;     // ignore touches in the middle
+    dragging = true; box.setPointerCapture(e.pointerId); draft = valAt(e); sent = false; clearTimeout(commitTimer); renderRoom();
+  });
+  box.addEventListener('pointermove', e => { if (!dragging) return; const v = valAt(e); if (v !== draft) { draft = v; renderRoom(); } });
+  box.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; setDraft(draft); });
+  box.addEventListener('pointercancel', () => { dragging = false; });
+})();
+
+// ---------- settings ----------
+function syncSeg() {
+  const t = tx();
+  for (const b of $('segLang').children) b.classList.toggle('on', b.dataset.v === LANG);
+  for (const b of $('segUnit').children) b.classList.toggle('on', b.dataset.v === UNIT);
+  $('ssTitle').textContent = t.settings; $('ssDone').textContent = t.done; $('lblLang').textContent = t.lang; $('lblUnit').textContent = t.unit; $('ssNote').textContent = t.ssNote;
+}
+$('settingsBtn').onclick = () => { syncSeg(); $('scrim').classList.add('on'); $('setSheet').classList.add('on'); };
+$('segLang').onclick = e => { const v = e.target.dataset.v; if (!v) return; LANG = v; localStorage.setItem('lang', v); syncSeg(); render(); };
+$('segUnit').onclick = e => { const v = e.target.dataset.v; if (!v) return; UNIT = v; localStorage.setItem('unit', v); syncSeg(); render(); };
+
+/*ADMINJS*/
+
+refresh();
+setInterval(() => { if (!document.hidden && !Object.keys(pend).length && draft == null) refresh(); }, 45000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+</script>
+</body>
+</html>

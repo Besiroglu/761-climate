@@ -1,0 +1,83 @@
+<!doctype html>
+<html class="staticrypt-html">
+<head>
+<meta charset="utf-8">
+<title>/*[|template_title|]*/0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="761">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="/761-climate/icon-180.png">
+<link rel="icon" href="/761-climate/icon-180.png">
+<meta http-equiv="cache-control" content="max-age=0"><meta http-equiv="cache-control" content="no-cache"><meta http-equiv="expires" content="0"><meta http-equiv="pragma" content="no-cache">
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--ink:#1c1c1e;--sub:#8a8a8e;--line:rgba(60,60,67,.18);--blue:#0a7aff;--err:#e5484d}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--sub:#8d8d93;--line:rgba(84,84,88,.6);--blue:#3a9bff;--err:#ff6369}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:17px/1.35 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+.hidden{display:none!important}
+#staticrypt_content{height:100%}
+.page{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 24px calc(env(safe-area-inset-bottom) + 14vh)}
+.mark{width:76px;height:76px;margin-bottom:18px}
+h1{font-size:34px;font-weight:700;margin:0;letter-spacing:.01em}
+.sub{color:var(--sub);font-size:16px;margin:6px 0 30px;text-align:center}
+form{width:100%;max-width:340px}
+input[type=password]{width:100%;font:inherit;font-size:17px;padding:14px 16px;border-radius:12px;border:0;background:var(--card);color:var(--ink);outline:none;box-shadow:0 0 0 .5px var(--line)}
+input[type=password]:focus{box-shadow:0 0 0 2px var(--blue)}
+button{width:100%;margin-top:12px;font:inherit;font-weight:600;padding:14px;border-radius:12px;border:0;background:var(--blue);color:#fff;cursor:pointer}
+button:active{opacity:.85}
+.err{color:var(--err);font-size:14px;text-align:center;min-height:20px;margin-top:12px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.spin{position:fixed;inset:0;display:grid;place-items:center}
+.spin svg{width:84px;height:84px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+</style>
+</head>
+<body class="staticrypt-body">
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#3a8dff"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+  <symbol id="ring" viewBox="0 0 100 100"><path d="M24.5 75.5A36 36 0 1 1 75.5 75.5" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round"/><circle cx="50" cy="14" r="6.5" fill="#fff" stroke="rgba(0,0,0,.08)"/></symbol></defs></svg>
+<div id="staticrypt_loading" class="spin"><svg><use href="#ring"/></svg></div>
+<div id="staticrypt_content" class="hidden">
+  <div class="page">
+    <svg class="mark"><use href="#ring"/></svg>
+    <h1>761</h1>
+    <div class="sub" id="t_sub"></div>
+    <form id="staticrypt-form" action="#" method="post">
+      <input id="staticrypt-password" type="password" name="password" autocomplete="current-password" autofocus>
+      <label id="staticrypt-remember-label" class="hidden"><input id="staticrypt-remember" type="checkbox" name="remember" checked></label>
+      <button type="submit" id="t_btn"></button>
+      <div class="err" id="t_err"></div>
+    </form>
+  </div>
+</div>
+<script>
+  const ja = (localStorage.getItem('lang') || ((navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en')) === 'ja';
+  document.getElementById('t_sub').textContent = ja ? 'パスワードを入力してください' : 'Enter the password to continue';
+  document.getElementById('staticrypt-password').placeholder = ja ? 'パスワード' : 'Password';
+  document.getElementById('t_btn').textContent = ja ? '開く' : 'Open';
+  const staticryptInitiator = /*[|js_staticrypt|]*/ 0;
+  const templateError = "/*[|template_error|]*/0", isRememberEnabled = /*[|is_remember_enabled|]*/ 0, staticryptConfig = /*[|staticrypt_config|]*/ 0;
+  const templateConfig = { rememberExpirationKey: "staticrypt_expiration", rememberPassphraseKey: "staticrypt_passphrase", replaceHtmlCallback: null, clearLocalStorageCallback: null };
+  const staticrypt = staticryptInitiator.init(staticryptConfig, templateConfig);
+  window.onload = async function () {
+    const { isSuccessful } = await staticrypt.handleDecryptOnLoad();
+    if (!isSuccessful) {
+      document.getElementById("staticrypt_loading").classList.add("hidden");
+      document.getElementById("staticrypt_content").classList.remove("hidden");
+      document.getElementById("staticrypt-password").focus();
+    }
+  };
+  document.getElementById("staticrypt-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const pw = document.getElementById("staticrypt-password");
+    const { isSuccessful } = await staticrypt.handleDecryptionOfPage(pw.value, true);
+    if (!isSuccessful) {
+      document.getElementById('t_err').textContent = ja ? 'パスワードが違います' : 'That password didn’t work';
+      const f = document.getElementById('staticrypt-form'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); pw.select();
+    }
+  });
+</script>
+</body>
+</html>

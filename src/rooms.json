@@ -1,0 +1,30 @@
+{
+  "system": "2022-0185",
+  "note": "Sensor numbers are Messana zone (room sensor) indexes. Until the installer re-links the main-floor valves, several sensors drive the NEIGHBOURING room's ceiling (verified 15 Oct 2026), so a room's targets are copied to the sensors that actually run its ceiling ('followers'), and the great room's ceiling is driven through the Bedroom 3 sensor ('puppet'). After the fix: followers [] and puppet null everywhere except real bathrooms.",
+  "floors": [
+    {"id": 0, "key": "main", "name": {"en": "Main floor", "ja": "1階"}, "min": 62, "max": 80, "minH": 60, "maxC": 90, "eco": [62, 78]},
+    {"id": 1, "key": "basement", "name": {"en": "Basement", "ja": "地下"}, "min": 65, "max": 72, "minH": 65, "maxC": 72, "eco": [65, 72]}
+  ],
+  "fcus": [
+    {"id": 0, "name": {"en": "Living-area fan coil (FCU-1)", "ja": "リビング系ファンコイル (FCU-1)"}},
+    {"id": 1, "name": {"en": "Bedroom fan coil (FCU-2)", "ja": "寝室系ファンコイル (FCU-2)"}}
+  ],
+  "heatOnlySensors": [7, 8, 9, 14],
+  "rooms": [
+    {"key": "living",   "floor": 0, "sensor": 0,  "followers": [],     "puppet": null, "fcu": 0, "name": {"en": "Living room", "ja": "リビング"}},
+    {"key": "dining",   "floor": 0, "sensor": 1,  "followers": [],     "puppet": null, "fcu": 0, "name": {"en": "Dining room", "ja": "ダイニング"}},
+    {"key": "great",    "floor": 0, "sensor": 2,  "followers": [],     "puppet": 3,    "fcu": 0, "name": {"en": "Great room & kitchen", "ja": "グレートルーム・キッチン"}},
+    {"key": "primary",  "floor": 0, "sensor": 5,  "followers": [6, 7], "puppet": null, "fcu": 1, "name": {"en": "Primary bedroom", "ja": "主寝室"}},
+    {"key": "beds23",   "floor": 0, "sensor": 4,  "followers": [8],    "puppet": null, "fcu": 1, "name": {"en": "Bedrooms 2 & 3", "ja": "寝室2・3"}},
+    {"key": "guest",    "floor": 1, "sensor": 10, "followers": [9],    "puppet": null, "fcu": null, "name": {"en": "Guest suite", "ja": "ゲストスイート"}},
+    {"key": "game",     "floor": 1, "sensor": 12, "followers": [],     "puppet": null, "fcu": null, "name": {"en": "Game room", "ja": "ゲームルーム"}},
+    {"key": "theater",  "floor": 1, "sensor": 13, "followers": [],     "puppet": null, "fcu": null, "name": {"en": "Theater", "ja": "シアター"}},
+    {"key": "officebath", "floor": 1, "sensor": 14, "followers": [],   "puppet": null, "fcu": null, "minor": true, "name": {"en": "Office bathroom", "ja": "書斎のバスルーム"}},
+    {"key": "laundry",  "floor": 1, "sensor": 11, "followers": [],     "puppet": null, "fcu": null, "minor": true, "name": {"en": "Laundry", "ja": "ランドリー"}}
+  ],
+  "ceilingOf": {
+    "0": "Living room", "1": "Dining room", "2": "Kitchen", "3": "Great room", "4": "Bedroom 3", "5": "Bedroom 2",
+    "6": "Primary bedroom", "7": "Primary bath", "8": "Bath 02", "9": "Guest bath + Bath 03 (main floor)",
+    "10": "Guest bedroom", "11": "Laundry (basement)", "12": "Game room", "13": "Theater", "14": "Office bath"
+  }
+}
